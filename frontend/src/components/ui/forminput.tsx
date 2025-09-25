@@ -1,7 +1,15 @@
 import * as React from 'react';
 import TextField from '@mui/material/TextField';
 
-export default function BasicTextFields({ label, value, onChange, type = "text", name }: any) {
+type Props = {
+  label: string;
+  value: string;
+  name?: string;
+  type?: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+export default function BasicTextFields({ label, value, onChange, type = "text", name }: Props) {
   return (
     <TextField
       id={`field-${name || label}`}

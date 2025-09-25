@@ -45,11 +45,12 @@ export default function ButtonAppBar() {
     setIsUser(true);
     (async () => {
       try {
-        const { data } = await axios.get<{ user: any }>(`http://localhost:4000/api/users/${userId}`, {
+        type User = { profilePicture?: string };
+        const { data } = await axios.get<{ user?: User } | User>(`http://localhost:4000/api/users/${userId}`, {
           withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },
         });
-        const user = data.user || data;
+        const user = (data as { user?: User }).user ?? (data as User);
         setAvatarUrl(user.profilePicture);
       } catch {
         setAvatarUrl(undefined);

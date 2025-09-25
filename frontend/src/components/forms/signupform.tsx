@@ -1,10 +1,11 @@
 'use client'
-import { useState } from 'react';
+import { useState, type ChangeEvent, type FormEvent } from 'react';
 import axios from 'axios';
 import {useRouter} from 'next/navigation'
 import {toast} from 'react-hot-toast'
 import TextButtons from '../ui/textbuttons';
 import BasicTextFields from '../ui/forminput'
+import Image from 'next/image'
 
 export default function Signupform() {
     const [user, setUser] = useState({
@@ -16,8 +17,8 @@ export default function Signupform() {
 
     const router = useRouter();
 
-    const handleProfileFile = (e: any) => {
-        const file = e.target.files?.[0];
+    const handleProfileFile = (e: ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0] || null;
         if(!file) return;
         const reader = new FileReader();
         reader.onload = () => {
@@ -26,7 +27,7 @@ export default function Signupform() {
         reader.readAsDataURL(file);
     }
 
-    const handleSignup = async(e:any) => {
+    const handleSignup = async(e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
             const res = await axios.post("http://localhost:4000/api/users/register", user);
@@ -42,9 +43,9 @@ export default function Signupform() {
             <div style={{ width: '100%', maxWidth: 420, background: 'rgba(255,255,255,0.06)', borderRadius: 12, padding: 24 }}>
                 <h1 className="text-3xl">Sign up</h1>
                 <form onSubmit={handleSignup}>
-                    <BasicTextFields name="username" label="username" value={user.username} onChange={(e: { target: { value: any; }; }) => setUser({...user, username:e.target.value})}/>
-                    <BasicTextFields name="email" type="email" label="Email" value={user.email} onChange={(e: { target: { value: any; }; }) => setUser({...user, email:e.target.value})}/>
-                    <BasicTextFields name="password" type="password" label="Password" value={user.password} onChange={(e: { target: { value: any; }; }) => setUser({...user, password:e.target.value})}/>
+                    <BasicTextFields name="username" label="username" value={user.username} onChange={(e: ChangeEvent<HTMLInputElement>) => setUser({...user, username:e.target.value})}/>
+                    <BasicTextFields name="email" type="email" label="Email" value={user.email} onChange={(e: ChangeEvent<HTMLInputElement>) => setUser({...user, email:e.target.value})}/>
+                    <BasicTextFields name="password" type="password" label="Password" value={user.password} onChange={(e: ChangeEvent<HTMLInputElement>) => setUser({...user, password:e.target.value})}/>
                     <div className="mt-5 mb-3">
                         <label className="block mb-2 text-sm font-medium text-white">Add your Picture</label>
                         <input
@@ -61,7 +62,7 @@ export default function Signupform() {
                           Choose file
                         </label>
                         {user.profilePicture ? (
-                            <img src={user.profilePicture} alt="preview" className="mt-2 w-24 h-24 object-cover rounded" />
+                            <Image src={user.profilePicture} alt="preview" width={96} height={96} className="mt-2 object-cover rounded" />
                         ) : null}
                     </div>
                     

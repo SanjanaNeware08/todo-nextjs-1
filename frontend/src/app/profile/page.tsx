@@ -3,11 +3,20 @@
 import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
-import { IconButton, Avatar, TextField, Button } from "@mui/material";
+import { IconButton, TextField, Button } from "@mui/material";
+import Image from "next/image";
 import { Edit as EditIcon, Delete as DeleteIcon, Save as SaveIcon } from "@mui/icons-material";
 
+type User = {
+  _id?: string;
+  username?: string;
+  name?: string;
+  email?: string;
+  profilePicture?: string;
+};
+
 export default function UpdateUserPage() {
-  const [currUser, setCurrUser] = useState<any>(null);
+  const [currUser, setCurrUser] = useState<User | null>(null);
 const [editField, setEditField] = useState<string | null>(null);
 const [fieldValue, setFieldValue] = useState("");
 
@@ -34,14 +43,15 @@ useEffect(() => {
 
   (async () => {
     try {
-      const { data } = await axios.get<{ user: any }>(
+      const { data } = await axios.get<{ user?: User } | User>(
         `http://localhost:4000/api/users/${userId}`,
         {
           withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      setCurrUser(data.user || data); // store in currUser
+      const user = (data as { user?: User }).user ?? (data as User);
+      setCurrUser(user);
     } catch (e) {
       console.error("Error fetching user:", e);
     }
@@ -49,23 +59,24 @@ useEffect(() => {
 }, []);
 
 // Save updated field
-const handleSave = async (field: string) => {
+const handleSave = async (field: keyof User | "password") => {
   try {
     const token = Cookies.get("token");
     const userId = getUserIdFromToken(token);
     if (!token || !userId) return;
 
     // optimistic update
-    setCurrUser((prev: any) => ({ ...prev, [field]: fieldValue }));
+    setCurrUser((prev) => (prev ? { ...prev, [field]: fieldValue } : prev));
 
     // persist in backend
-    const res = await axios.patch<{ user: any }>(
+    const res = await axios.patch<{ user?: User } | User>(
       `http://localhost:4000/api/users/${userId}`,
       { [field]: fieldValue },
       { withCredentials: true, headers: { Authorization: `Bearer ${token}` } }
     );
 
-    setCurrUser(res.data.user || res.data); // sync with backend response
+    const updated = (res.data as { user?: User }).user ?? (res.data as User);
+    setCurrUser(updated);
 
     console.log("curr user:", currUser);
     setEditField(null);
@@ -105,13 +116,15 @@ const handleSave = async (field: string) => {
         {/* Left: Large image */}
         <div className="w-full">
           <div className="">
-          <img
+          <Image
             src={
               currUser.profilePicture ||
               "https://images.unsplash.com/photo-1544006659-f0b21884ce1d?q=80&w=1000&auto=format&fit=crop"
             }
             alt="Profile"
-            className="w-[400px] h-[400px] rounded-full object-cover"
+            width={400}
+            height={400}
+            className="rounded-full object-cover"
           />
           </div>
           <div className="mt-3 flex items-center gap-3">
@@ -184,7 +197,7 @@ const handleSave = async (field: string) => {
             ) : (
               <div className="flex items-center gap-2 flex-1">
                 <div className="font-medium">{currUser.username}</div>
-                <IconButton onClick={() => { setEditField("username"); setFieldValue(currUser.username); }}>
+                <IconButton onClick={() => { setEditField("username"); setFieldValue(currUser.username ?? ""); }}>
                   <EditIcon className="text-white"/>
                 </IconButton>
               </div>
@@ -222,7 +235,7 @@ const handleSave = async (field: string) => {
             ) : (
               <div className="flex items-center gap-2 flex-1">
                 <div className="font-medium">{currUser.email}</div>
-                <IconButton onClick={() => { setEditField("email"); setFieldValue(currUser.email); }}>
+                <IconButton onClick={() => { setEditField("email"); setFieldValue(currUser.email ?? ""); }}>
                   <EditIcon className="text-white"/>
                 </IconButton>
               </div>

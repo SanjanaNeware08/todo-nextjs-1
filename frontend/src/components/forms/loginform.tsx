@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react';
+import { useState, type ChangeEvent, type FormEvent } from 'react';
 import axios from 'axios';
 import {useRouter} from 'next/navigation'
 import BasicTextFields from '@/components/ui/forminput'
@@ -13,7 +13,7 @@ export default function Loginform() {
 
     const router = useRouter();
 
-    const handleLogin = async(e:any) => {
+    const handleLogin = async(e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
             type LoginResponse = {
@@ -36,8 +36,8 @@ export default function Loginform() {
             <div style={{ width: '100%', maxWidth: 420, background: 'rgba(255,255,255,0.06)', borderRadius: 12, padding: 24 }}>
                 <h1 className="text-3xl">Login</h1>
                 <form onSubmit={handleLogin}>
-                    <BasicTextFields name="email" label="Email" value={user.email} onChange={(e: { target: { value: any; }; }) => setUser({...user, email:e.target.value})}/>
-                    <BasicTextFields name="password" type="password" label="Password" value={user.password} onChange={(e: { target: { value: any; }; }) => setUser({...user, password:e.target.value})}/>
+                    <BasicTextFields name="email" label="Email" value={user.email} onChange={(e: ChangeEvent<HTMLInputElement>) => setUser({...user, email:e.target.value})}/>
+                    <BasicTextFields name="password" type="password" label="Password" value={user.password} onChange={(e: ChangeEvent<HTMLInputElement>) => setUser({...user, password:e.target.value})}/>
                     <TextButtons/>
                 </form>
             </div>

@@ -23,7 +23,6 @@ export default function AddTaskDialog({ open, onClose, onCreated }: Props){
   const [dueDate, setDueDate] = useState('');
   const [status, setStatus] = useState<Task['status']>('todo');
   const [submitting, setSubmitting] = useState(false);
-  const [isToday,setIsToday] = useState(false);
 
   const handleSubmit = async () => {
     if(!title.trim()) return;

@@ -47,7 +47,7 @@ export default function Upcomingtask(){
             const res = await fetchTasks(query);
             setTasks(res.tasks || []);
             setTotalPages(res.pagination?.totalPages || 1);
-          }catch(err:any){
+          }catch{
             setError('Failed to load tasks');
           }finally{
             setLoading(false);

@@ -37,7 +37,7 @@ export default function TodaysTask() {
                 const res = await fetchTasks(query);
                 setTasks(res.tasks || []);
                 setTotalPages(res.pagination?.totalPages || 1);
-            }catch(err:any){
+            }catch{
                 setError('Failed to load tasks');
             }finally{
                 setLoading(false);
@@ -67,7 +67,7 @@ export default function TodaysTask() {
     return (
         <section className="bg-white/5 border border-white/10 rounded-2xl shadow-xl p-6 md:p-7 backdrop-blur">
             <div className="flex items-center justify-between mb-5">
-                <h2 className="text-2xl font-semibold">Today's Tasks</h2>
+                <h2 className="text-2xl font-semibold">Today&apos;s Tasks</h2>
                 <div className="flex items-center gap-3">
                     <div className="text-sm opacity-70 hidden md:block">{new Date().toLocaleDateString()}</div>
                     <button
@@ -148,5 +148,9 @@ export default function TodaysTask() {
         </section>
     )
 }
+
+
+
+
 
 
